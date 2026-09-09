@@ -16,7 +16,7 @@ from shapely.geometry import Polygon
 import pickle
 
 # spectral fits
-from priors_dc1 import *
+from .priors_dc1 import *
 import time
 import emcee
 import corner
@@ -269,5 +269,4 @@ def COSImodfit(theta, data, sky_model, background_model, eval=False):
         return -np.inf
     else:
         return stat
-
 

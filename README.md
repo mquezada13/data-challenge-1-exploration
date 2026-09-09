@@ -9,7 +9,7 @@ If you already have the COSItools installed on your computer, type `cosi` to nav
 
 The file [requirements.txt](requirements.txt) lists all of the dependencies for running the data challenge, and they can all be installed using pip: `pip install -r requirements.txt`. 
 
-You will also need to add the [cosipy-classic](cosipy-classic) directory to your python path, e.g. `export PYTHONPATH=$PYTHONPATH:/path/to/COSItools/cosi-data-challenge-1/cosipy-classic`. 
+The notebooks automatically locate the [COSIpy-classic package](src/cosipy_classic) in this repository. For use from a separate Python script, add the repository's `src` directory to your Python path, e.g. `export PYTHONPATH=$PYTHONPATH:/path/to/COSItools/cosi-data-challenge-1/src`.
 
 Some of the data products are large and we are using the Git Large File Server. You will need to install git-lfs: https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage. After Git LFS has been successfully installed, navigate to your local cosi-data-challenge-1 directory and `git lfs pull` to download all of the data products. If this step is not performed, the file names will appear locally, but they will only be placeholders and the size will be only a few hundred kB. The total size of the data products should be 4.6 GB.
 
@@ -18,7 +18,7 @@ You should now be able to start a python session, or open one of the provided no
 ### New to COSItools:
 Head to the feature/initialsetup branch of the cosi-setup Git repository and follow the readme guide: https://github.com/cositools/cosi-setup/tree/feature/initialsetup. Note that when making the installation you must include the option "--extras=cosi-data-challenge-1". This installation will include MEGAlib, ROOT, Geant4, Git LFS, and all packages in the [requirements.txt](requirements.txt) file. After successful installation (this will take time), you will want to activate the cosi python environment by typing `cosi`. 
 
-You will also need to add the [cosipy-classic](cosipy-classic) directory to your python path, e.g. `export PYTHONPATH=$PYTHONPATH:/path/to/COSItools/cosi-data-challenge-1/cosipy-classic`. 
+The notebooks automatically locate the [COSIpy-classic package](src/cosipy_classic) in this repository. For use from a separate Python script, add the repository's `src` directory to your Python path, e.g. `export PYTHONPATH=$PYTHONPATH:/path/to/COSItools/cosi-data-challenge-1/src`.
 
 ## Getting Help
 
@@ -30,7 +30,7 @@ The COSI pipeline tools, COSItools, are divided into two programs (see figure be
 
 <img width="800" alt="Screen Shot 2022-10-16 at 10 19 29 PM" src="https://user-images.githubusercontent.com/33991471/196075227-8d1fe6c8-eb4b-40aa-905e-549e15ecabe8.png">
 
-This Data Challenge will serve to introduce the community to COSIpy and general Compton telescope analysis. We have prepared Jupyter Notebooks to walk the user through the analyses which are provided under [spectral-fit](spectral-fit) and [imaging](imaging); however, we suggest reading through the below description before attempting the notebooks.
+This Data Challenge will serve to introduce the community to COSIpy and general Compton telescope analysis. We have prepared Jupyter notebooks for [spectral fitting](notebooks/simulated/spectral) and [imaging](notebooks/simulated/imaging); however, we suggest reading through the description below before attempting the notebooks.
 
 COSIpy was first developed by Thomas Siegert in 2019 to perform 511 keV image analysis from the 2016 COSI balloon flight ([Siegert et al. 2020](https://ui.adsabs.harvard.edu/abs/2020ApJ...897...45S/abstract)). Since then, it has been used for point source imaging and spectral extraction (e.g. [Zoglauer et al. 2021](https://ui.adsabs.harvard.edu/abs/2021arXiv210213158Z/abstract)), Aluminum-26 (Al-26) spectral fitting ([Beechert et al. 2022](https://ui.adsabs.harvard.edu/abs/2022ApJ...928..119B/abstract)) and Al-26 imaging, all using data from the COSI Balloon 2016 flight. These analyses and the current Data Challenge use what we refer to as “COSIpy-classic.” The team is currently working on improved response handling and streamlined tools built from the bottom up, and the new and improved COSIpy will be the focus of the coming years’ Data Challenges! With that in mind, there are still known issues and limitations with COSIpy-classic that we will call out throughout this work.
 
@@ -41,7 +41,7 @@ For the first Data Challenge, we wanted to give the users a basic look at COSI d
 2. Imaging bright point sources, such as the Crab and Cyg-X1. </br>
 3. Imaging diffuse emission from 511 keV and the Al-26 1.8 MeV gamma-ray line. </br>
 
-For each of these examples, we have provided a detailed description of the simulated sources and data products in the [data_products](data_products) directory. Each of the sources was simulated at 10x the astrophysical flux since the balloon flight had limited observation time, and because there were multiple detector failures during the balloon flight which reduced the effective area significantly. 
+For each of these examples, we have provided a detailed description of the simulated sources and data products in the [data](data) directory. Each of the sources was simulated at 10x the astrophysical flux since the balloon flight had limited observation time, and because there were multiple detector failures during the balloon flight which reduced the effective area significantly.
 
 ## General Compton Telescope Analysis Procedure
 
@@ -86,7 +86,7 @@ For forward-folding analysis methods, we assume a source sky distribution, refer
 
 ### Background Model
 
-We require an accurate estimate of the backgrounds during observations. This background model (B) can be achieved in a number of ways. One approach is to use the measured flight data from source-starved regions. Alternatively, one can perform full bottom-up simulations of the gamma-ray background at balloon-flight altitudes, including atmospheric contamination and instrumental activation. For this first Data Challenge, we use the latter approach. The simulation is further described in [data_products](data_products); in future Data Challenges, we will employ multiple background-model approaches.
+We require an accurate estimate of the backgrounds during observations. This background model (B) can be achieved in a number of ways. One approach is to use the measured flight data from source-starved regions. Alternatively, one can perform full bottom-up simulations of the gamma-ray background at balloon-flight altitudes, including atmospheric contamination and instrumental activation. For this first Data Challenge, we use the latter approach. The simulation is further described in [data](data); in future Data Challenges, we will employ multiple background-model approaches.
 
 With the background model generated from simulations, we subsequently bin it in the same CDS that we used for the data and the source model. We have already performed this step for you, and have provided a .npz file, which is a zipped numpy array of the background simulation in the CDS.
 
@@ -117,7 +117,7 @@ Finally, this equation can be solved iteratively, (for each pixel simultaneously
 
 ## Next Steps
 
-Now that you have a better understanding of the general approach to Compton telescope analyses, you’re ready to start on the analysis examples. First, we recommend you review the detailed descriptions of the simulations in the [data_products](data_products) directory. The easiest analysis is the spectral fitting, and we recommend you start there: [spectral_fit](spectral-fit). The Richardson-Lucy imaging is computationally intensive, and still largely hard-coded in this release, and thus we recommend you work through these notebooks second: [imaging](imaging). Please note that you should use a workstation with a large memory allocation for the imaging analyses, if one is available to you. A personal laptop with only 16 GB of memory, for example, will be limiting. Finally, we have also included some of the COSI Balloon data for analysis of the Crab Nebula as seen during the 2016 flight. After you’ve run through the spectral fitting and image deconvolution with the simulated data, you should be ready to analyze this real flight data: [balloon data](cosi_2016_balloon_data)! 
+Now that you have a better understanding of the general approach to Compton telescope analyses, you’re ready to start on the analysis examples. First, review the simulation descriptions in the [data](data) directory. We recommend starting with [spectral fitting](notebooks/simulated/spectral), followed by the more computationally intensive Richardson-Lucy [imaging notebooks](notebooks/simulated/imaging). Please use a workstation with a large memory allocation for imaging if one is available; a personal laptop with only 16 GB of memory will be limiting. Finally, after running the simulated analyses, you can analyze the real 2016 observations in the [balloon data notebooks](notebooks/flight-2016).
 
 As mentioned previously, please don't hesitate to reach out to the COSI Data Challenge team if you have any questions, concerns, issues, or suggestions. Email [Chris Karwin](mailto:christopher.m.karwin@nasa.gov).
 

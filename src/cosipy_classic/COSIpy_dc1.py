@@ -5,11 +5,50 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 
-from tqdm.autonotebook import tqdm
+#from tqdm.autonotebook import tqdm
+from tqdm.auto import tqdm
 from IPython.display import HTML
 
 import warnings
 warnings.filterwarnings('ignore')
+
+
+# Plot styling: visual defaults only; analysis logic is intentionally untouched.
+_COSI_PLOT_COLORS = ("#313695", "#4575b4", "#74add1", "#a50026",
+                     "#d73027", "#f46d43", "#fdae61")
+
+
+def _apply_plot_style(ax):
+    """Apply a consistent publication-style finish to a Matplotlib axis."""
+    for spine in ax.spines.values():
+        spine.set_color("black")
+        spine.set_linewidth(1.5)
+
+    ax.minorticks_on()
+    ax.tick_params(axis="both", which="major", direction="in",
+                   top=True, right=True, width=1.5, length=7, labelsize=14)
+    ax.tick_params(axis="both", which="minor", direction="in",
+                   top=True, right=True, width=1.1, length=4)
+    ax.xaxis.label.set_fontfamily("serif")
+    ax.yaxis.label.set_fontfamily("serif")
+    ax.xaxis.label.set_fontsize(18)
+    ax.yaxis.label.set_fontsize(18)
+
+    for label in ax.get_xticklabels() + ax.get_yticklabels():
+        label.set_fontfamily("serif")
+
+    for text in ax.texts:
+        text.set_fontfamily("serif")
+
+    legend = ax.get_legend()
+    if legend is not None:
+        legend.set_frame_on(False)
+        for text in legend.get_texts():
+            text.set_fontfamily("serif")
+            text.set_fontsize(13)
+
+    ax.figure.tight_layout()
+
 
 # Load MEGAlib into ROOT
 M.gSystem.Load("$(MEGAlib)/lib/libMEGAlib.so")
@@ -215,23 +254,24 @@ class COSIpy:
                     ax.plot([self.dataset.energy_bin_min[i],
                              self.dataset.energy_bin_min[i]],
                             [0,
-                             self.dataset.energy_spec_data[i]/self.dataset.energy_bin_wid[i]/2],marker='',linestyle='-',color='black')
+                             self.dataset.energy_spec_data[i]/self.dataset.energy_bin_wid[i]/2],marker='',linestyle='-',color=_COSI_PLOT_COLORS[0],linewidth=1.8)
                 elif i < self.dataset.n_energy_bins:
                     ax.plot([self.dataset.energy_bin_min[i],
                              self.dataset.energy_bin_min[i]],
                             [self.dataset.energy_spec_data[i-1]/self.dataset.energy_bin_wid[i-1]/2,
-                             self.dataset.energy_spec_data[i]/self.dataset.energy_bin_wid[i]/2],marker='',linestyle='-',color='black')
+                             self.dataset.energy_spec_data[i]/self.dataset.energy_bin_wid[i]/2],marker='',linestyle='-',color=_COSI_PLOT_COLORS[0],linewidth=1.8)
     
                 ax.plot([self.dataset.energy_bin_max[i],
                          self.dataset.energy_bin_max[i]],
                         [self.dataset.energy_spec_data[i]/self.dataset.energy_bin_wid[i]/2,
-                         0],marker='',linestyle='-',color='black')
+                         0],marker='',linestyle='-',color=_COSI_PLOT_COLORS[0],linewidth=1.8)
                 ax.plot([self.dataset.energy_bin_min[i],
                          self.dataset.energy_bin_max[i]],
                         [self.dataset.energy_spec_data[i]/self.dataset.energy_bin_wid[i]/2,
-                         self.dataset.energy_spec_data[i]/self.dataset.energy_bin_wid[i]/2],marker='',linestyle='-',color='black')
+                         self.dataset.energy_spec_data[i]/self.dataset.energy_bin_wid[i]/2],marker='',linestyle='-',color=_COSI_PLOT_COLORS[0],linewidth=1.8)
             ax.set_xlabel('Energy [keV]')
             ax.set_ylabel('Counts [cnts/keV]')
+            _apply_plot_style(ax)
 
 
         except AttributeError:
@@ -265,20 +305,23 @@ class COSIpy:
                 fig, ax = plt.subplots(1,1,figsize=(16,6))
             
                 # loop over sources
-                for l,b,name in zip(l_src,b_src,name_src):
+                for source_index, (l,b,name) in enumerate(zip(l_src,b_src,name_src)):
                     # the elevation is just the edge of the field of view (= horizon) minus the angular distance to the source
                     tmp_elevation = self.horizon-angular_distance(l,b,self.dataset.l_pointing,self.dataset.b_pointing)
-                    ax.plot(self.dataset.t_pointing,tmp_elevation,label=name,marker='.',color='k',linestyle='')
+                    ax.plot(self.dataset.t_pointing,tmp_elevation,label=name,marker='.',
+                            color=_COSI_PLOT_COLORS[source_index % len(_COSI_PLOT_COLORS)],
+                            linestyle='',markersize=4,alpha=0.85)
                 
                 ax.set_xlabel('Unix time [s]')
                 ax.set_ylabel('Elevation above COSI horizon [deg]')
             
                 # indicating what the maximum elevation is (TS: the y-axis might be confusing)
-                ax.axhline(self.horizon,linestyle='--',color='black')
+                ax.axhline(self.horizon,linestyle='--',color=_COSI_PLOT_COLORS[3],linewidth=1.5)
                 ax.text(np.median(minmax(self.dataset.t_pointing)),self.horizon,
                         'Zenith',horizontalalignment='center',verticalalignment='bottom')
                 ax.set_ylim(0,)
                 ax.legend()
+                _apply_plot_style(ax)
             
             except TypeError:
                 print('Input longitudes, latitudes, and names should be lists.')
@@ -302,9 +345,11 @@ class COSIpy:
                 self.dataset.times_wid   = 0.5*(self.dataset.times_max-self.dataset.times_min)
                 
                 fig, ax = plt.subplots(1,1,figsize=(8,6))
-                ax.step(self.dataset.times_cen,self.dataset.light_curve,where='mid')
+                ax.step(self.dataset.times_cen,self.dataset.light_curve,where='mid',
+                        color=_COSI_PLOT_COLORS[0],linewidth=1.8)
                 ax.set_xlabel('Seconds since UNIX second '+str('%.2f' % self.dataset.data['TimeTags'][0])+' [s]')
                 ax.set_ylabel('Count rate [cnts/s]')
+                _apply_plot_style(ax)
 
             except:
                 print('Time tags not binned, yet, binning for 1 hour intervals now ...')
@@ -569,8 +614,8 @@ class dataset(COSIpy):
                         # multi-D histogramming of the events in energy and phi
                         tmp_hist = np.histogramdd(np.array([erg_tmp[fisbel_idx_tmp],
                                                             phi_tmp[fisbel_idx_tmp]]).T,
-                                                  bins=np.array([self.energies.energy_bin_edges,
-                                                                 self.phis.phi_edges]))#,
+                                                  bins=(self.energies.energy_bin_edges,
+                                                        self.phis.phi_edges))#,
 
                         # fill into binned_data array
                         self.binned_data[ph_dx,:,:,f] = tmp_hist[0]
@@ -716,28 +761,29 @@ class dataset(COSIpy):
                 # make a plot
                 fig, ax = plt.subplots(1,1,figsize=(8,6))
                 for t in range(self.energies.energy_spec_data.shape[0]):
+                    spectrum_color = _COSI_PLOT_COLORS[t % len(_COSI_PLOT_COLORS)]
                     for i in range(self.energies.n_energy_bins):
                         if i == 0 :
                             ax.plot([self.energies.energy_bin_min[i],
                                      self.energies.energy_bin_min[i]],
                                     [0,
-                                     self.energies.energy_spec_data[t,i]],marker='',linestyle='-',color='black')
+                                     self.energies.energy_spec_data[t,i]],marker='',linestyle='-',color=spectrum_color,linewidth=1.8)
                         elif i < self.energies.n_energy_bins:
                             ax.plot([self.energies.energy_bin_min[i],
                                      self.energies.energy_bin_min[i]],
                                     [self.energies.energy_spec_data[t,i-1],
-                                     self.energies.energy_spec_data[t,i]],marker='',linestyle='-',color='black')
+                                     self.energies.energy_spec_data[t,i]],marker='',linestyle='-',color=spectrum_color,linewidth=1.8)
     
                         ax.plot([self.energies.energy_bin_max[i],
                                  self.energies.energy_bin_max[i]],
                                 [self.energies.energy_spec_data[t,i],
-                                0],marker='',linestyle='-',color='black')
+                                0],marker='',linestyle='-',color=spectrum_color,linewidth=1.8)
                         ax.plot([self.energies.energy_bin_min[i],
                                  self.energies.energy_bin_max[i]],
                                 [self.energies.energy_spec_data[t,i],
-                                 self.energies.energy_spec_data[t,i]],marker='',linestyle='-',color='black')
-                ax.set_xlabel('Energy [keV]')
-                ax.set_ylabel('Counts [cnts/s/keV]')
+                                 self.energies.energy_spec_data[t,i]],marker='',linestyle='-',color=spectrum_color,linewidth=1.8)
+                ax.set_xlabel(r'Energy $\rm [keV]$')
+                ax.set_ylabel(r'Counts $\rm [cnts/s/keV]$')
             
                 if (mode == 'total') | (mode == 'all'):
                     text_time = self.times.total_time
@@ -747,7 +793,8 @@ class dataset(COSIpy):
                 ax.text(0.7,0.8,
                         'Time bin: '+str(mode)+
                         '\n ('+str('%.1f' % text_time)+' s)',
-                        transform=ax.transAxes,fontsize=16)
+                        transform=ax.transAxes,fontsize=14,fontfamily='serif')
+                _apply_plot_style(ax)
 
 
         except AttributeError:
@@ -783,9 +830,10 @@ class dataset(COSIpy):
                     self.light_curve = self.lc_all[:,mode]
                 
                 fig, ax = plt.subplots(1,1,figsize=(8,6))
-                ax.step(self.times.times_cen[self.times.n_ph_dx],self.light_curve,where='mid',color="black")
-                ax.set_xlabel('Seconds since UNIX second '+str('%.2f' % self.data['TimeTags'][0])+' [s]')
-                ax.set_ylabel('Count rate [cnts/s]')
+                ax.step(self.times.times_cen[self.times.n_ph_dx],self.light_curve,where='mid',
+                        color=_COSI_PLOT_COLORS[0],linewidth=1.8)
+                ax.set_xlabel(r'Seconds since UNIX second '+str('%.2f' % self.data['TimeTags'][0])+' [s]')
+                ax.set_ylabel(r'Count rate $\rm [cnts/s]$')
 
                 if (mode == 'total') | (mode == 'all'):
                     text_energy = minmax(self.energies.energy_bin_edges)
@@ -796,7 +844,8 @@ class dataset(COSIpy):
                 ax.text(0.6,0.8,
                         'Energy bin: '+str(mode)+
                         '\n ('+str('%.1f-%.1f keV' % (text_energy[0],text_energy[1]))+')',
-                        transform=ax.transAxes,fontsize=16)
+                        transform=ax.transAxes,fontsize=14,fontfamily='serif')
+                _apply_plot_style(ax)
             
         except AttributeError:
             print('Data not yet binned? Use get_binned_data() first.')
@@ -896,7 +945,7 @@ class FISBEL(dataset):
             FixBinArea = 4*np.pi/n_bins
             SquareLength = np.sqrt(FixBinArea)
             
-            n_collars = np.int((np.pi/SquareLength-1)+0.5) + 2
+            n_collars = int((np.pi/SquareLength-1)+0.5) + 2
             # -1 for half one top AND Bottom, 0.5 to round to next integer
             # +2 for the half on top and bottom
             
@@ -920,7 +969,7 @@ class FISBEL(dataset):
             LatitudeBinEdges[n_collars - 1] = np.pi - LatitudeBinEdges[1]
             
             # now iterate over remaining bins
-            for collar in range(1,np.int(np.ceil(n_collars/2))):
+            for collar in range(1,int(np.ceil(n_collars/2))):
                 UnusedLatitude = LatitudeBinEdges[n_collars-collar] - LatitudeBinEdges[collar]
                 UnusedCollars = n_collars - 2*collar
                 
@@ -928,7 +977,7 @@ class FISBEL(dataset):
                 NextBinsEstimate = 2*np.pi * (np.cos(LatitudeBinEdges[collar]) - np.cos(NextEdgeEstimate)) / FixBinArea
                 
                 # roundgind
-                NextBins = np.int(NextBinsEstimate+0.5)
+                NextBins = int(NextBinsEstimate+0.5)
                 NextEdge = np.arccos(np.cos(LatitudeBinEdges[collar]) - NextBins*FixBinArea/2/np.pi)
             
                 # insert at correct position
@@ -951,7 +1000,7 @@ class FISBEL(dataset):
         CoordinatePairs = []
         Binsizes = []
         for c in range(n_collars):
-            for l in range(np.int(LongitudeBins[c])):
+            for l in range(int(LongitudeBins[c])):
                 CoordinatePairs.append([np.mean(LatitudeBinEdges[c:c+2]),np.mean(LongitudeBinEdges[c][l:l+2])])
                 Binsizes.append([np.diff(LatitudeBinEdges[c:c+2]),np.diff(LongitudeBinEdges[c][l:l+2])])
      
@@ -1114,7 +1163,17 @@ class BG():
         # elif self.bg_mode == 'sim 6deg despina':
         if self.bg_mode == 'default 6deg':
             print('Reading in flight-average background response for 6 deg CDS binning ...')
-            self.default_bg_response_file = '../../data_products/flight_bg_all_v1_fine_6deg.npz'
+            module_dir = os.path.dirname(os.path.abspath(__file__))
+            self.default_bg_response_file = os.path.abspath(
+                os.path.join(
+                    module_dir,
+                    '..',
+                    '..',
+                    'data',
+                    'backgrounds',
+                    'flight_bg_all_v1_fine_6deg.npz',
+                )
+            )
         
         if self.bg_mode == 'sim 6deg despina':
             print('Reading in simulated Ling-model (1973) background response for 6 deg CDS binning from despina only...')
@@ -1524,4 +1583,3 @@ def find_nearest(array, value):
     array = np.asarray(array)
     idx = (np.abs(array - value)).argmin()
     return idx
-

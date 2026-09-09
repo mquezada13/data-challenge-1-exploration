@@ -1,6 +1,6 @@
 # COSI 2016 Balloon Data
 
-Here we will perform a spectral fit and imaging of the Crab using the 2016 COSI balloon data. The analyses will mostly follow the notebooks used for the simulated data. For more details on the steps of the spectral analysis, see the main spectral-fit README [(here)](../../spectral-fit/README.md), and likewise for the imaging analysis README [(here)](../../imaging/README.md). This README summarizes the key differences that are needed for analyzing the balloon data. 
+Here we will perform a spectral fit and imaging of the Crab using the 2016 COSI balloon data. The analyses will mostly follow the notebooks used for the simulated data. For more details, see the simulated [spectral fitting README](../simulated/spectral/README.md) and [imaging README](../simulated/imaging/README.md). This README summarizes the key differences needed for analyzing the balloon data.
 
 ## The Balloon Flight
 COSI launched from Wanaka, New Zealand on NASA's Super Pressure Balloon on May 16th, 2016. After a 46 day flight, COSI landed in Southern Peru. The trajectory of the mission is shown in the image below. After one full circumnavigation, COSI floated north and an anomaly in the balloon resulted in the zagged nature of the path for the second half of the flight, indicated with the red curve. For more details of the COSI Balloon instrument, see ([Kierans et al. 2017](https://ui.adsabs.harvard.edu/abs/2017arXiv170105558K/abstract)).
@@ -41,5 +41,4 @@ The primary outputs of the imaging, after 100 iterations, are shown below. Note 
 
 
 <img width="700" alt="Screen Shot 2022-10-27 at 1 19 24 PM" src="https://user-images.githubusercontent.com/54562666/198356983-6494b2e4-9bb6-42ad-bd7b-451d9af360d5.png">
-
 

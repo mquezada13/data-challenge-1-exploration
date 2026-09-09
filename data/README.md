@@ -5,7 +5,7 @@ For the first Data Challenge, we wanted to give users a basic introduction to CO
 - Imaging bright point sources, such as the Crab and Cygnus X-1
 - Imaging diffuse emission from the positron-electron annihilation 511 keV and the Al-26 1.8 MeV gamma-ray lines
 
-For each of these examples, we have provided a detailed description of the simulated sources and data products here in the data_products directory. Each of the sources was simulated at 10x the true astrophysical flux. Having a strong signal simplifies the analysis and allows us to focus on the workflow of the procedures. The COSI SMEX mission is expected to be 50x more sensitive than the balloon-borne mission.
+For each of these examples, we have provided a detailed description of the simulated sources and data products in this directory. Simulated events are stored under `simulated/events`, flight observations under `flight`, detector responses under `responses`, and background products under `backgrounds`. Each source was simulated at 10x the true astrophysical flux. Having a strong signal simplifies the analysis and allows us to focus on the workflow of the procedures. The COSI SMEX mission is expected to be 50x more sensitive than the balloon-borne mission.
 
 The simulations were all performed in MEGAlib with an accurate mass model of the COSI Balloon instrument. The [COSIBalloon.9Detector.geo.setup](https://github.com/cositools/massmodel-cosi-balloon/blob/main/COSIBalloon.9Detector.geo.setup) model was used, which accounts for the failure of three GeD detectors at different times during flight. Each of the continuum simulations was performed for 100 keV – 10 MeV, and an energy range selection of <5 MeV was used in MEGAlib’s mimrec event selection tool. 
 
@@ -192,7 +192,6 @@ An image of the background simulation traces the exposure map, since the orienta
 
 
  
-
 
 
 

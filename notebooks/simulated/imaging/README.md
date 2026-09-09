@@ -5,7 +5,7 @@ In this example, we'll use a Richardson-Lucy deconvolution algorithm to image th
 2. [RL-DataChallenge-511keV_10xFlux-Ling.ipynb](RL-DataChallenge-511keV_10xFlux-Ling.ipynb) performs the diffuse imaging of the 511 keV emission.
 3. [RL-DataChallenge-Al26_10xFlux-Ling.ipynb](RL-DataChallenge-Al26_10xFlux-Ling.ipynb) performs the diffuse imaging of the Al-26 1.8 MeV decay line.
 
-The three notebooks are almost identical in their execution, but different data sets will be uploaded, different response matrices will be used, and slightly different imaging parameters will be required. Please refer to the [data_products](../data_products) README for more details on the scientific background for these sources, and the simulated source models. This README should act as a guide offering additional information for each step of the analysis. The following sections align with the different steps within the notebooks.
+The three notebooks are almost identical in their execution, but different data sets will be uploaded, different response matrices will be used, and slightly different imaging parameters will be required. Please refer to the [data README](../../../data/README.md) for more details on the scientific background for these sources and the simulated source models. This README should act as a guide offering additional information for each step of the analysis. The following sections align with the different steps within the notebooks.
 
 **Before diving in**, you should be aware that these notebooks take signficant time and computer memory to run, more so than the spectral fitting notebook. Calculating the imaging response takes ~1 hour on a personal computer with 16 GB of memory, and to actually perform the Richardson-Lucy image deconvolution as it currently is written will take >75 GB of memory - this will likely be >6 hours even on powerful workstations. The imaging may not be doable with a personal computer and it is recommended that you complete this analysis on a workstation with more memory, if accessible. 
 
@@ -37,7 +37,7 @@ For Al-26, we use a response simulation with only one energy bin around the 1809
 **Sky pixel size:** As with the energy binning, the pixel size here must match that of the response. The response matrix that we are providing for this COSI-balloon analysis assumes $6^{\circ} \times 6^{\circ}$ resolution.
 
 ### Binning
-Calling `.get_binned_data()` will loop through all of the events in the simulated data set to fill the bins of the Compton Data Sapce (CDS; [../README.md](../README.md)).
+Calling `.get_binned_data()` will loop through all of the events in the simulated data set to fill the bins of the Compton Data Sapce (CDS; [main README](../../../README.md)).
 
 ### Examining the shape
 
@@ -64,11 +64,11 @@ The pointing class handles the aspect information of the COSI-balloon instrument
 
 This is all to say that COSI's orientation changed rapidly during flight. We had a differential GPS onboard, which recorded the yaw, pitch, and roll of the balloon payload every second. In the COSI-balloon calibrations performed in MEGAlib, this is converted to the X, Y and Z pointing of the COSI-balloon in Galactic coordinates. This aspect information is contained in the .tra.gz simulation file and the pointing information for each event is read in during the `.read_COSI_DataSet()` command. This pointing class bins this aspect information into a list of 'stable' pointings for which the change in the aspect is below a certain angular threshold. By default, this threshold is set to 5 degrees. This information is required when creating the sky model or image response.
 
-In the point source imaging [notebook](RL-DataChallenge-Point_Sources-10XFlux-Ling.ipynb), we include some visuals to help you understand the pointings. For example, all of the Z pointings (i.e. COSI's zenith) are plotted in Galactic coordinates, with the Crab nebula position overlaid. From this, you can see the path that COSI traced across the sky. This can be compared with the flight path shown in the main [README](../README.md). We also can plot the elevation of any source within COSI's FOV. The elevation for the Crab position is shown, and we can see the source move in and out of the field of view. In this plot, the "horizon" lies at the maximum extent of what COSI can see beyond zenith, which is ~60 deg from zenith; therefore, COSI's zenith lies 60 deg above the horizon. The Crab is more visible in the latter part of the flight when COSI floated further north. We notice, too, that the Crab is always somewhat off-axis; it is never directly overhead the instrument at zenith.
+In the point source imaging [notebook](RL-DataChallenge-Point_Sources-10XFlux-Ling.ipynb), we include some visuals to help you understand the pointings. For example, all of the Z pointings (i.e. COSI's zenith) are plotted in Galactic coordinates, with the Crab nebula position overlaid. From this, you can see the path that COSI traced across the sky. This can be compared with the flight path shown in the main [README](../../../README.md). We also can plot the elevation of any source within COSI's FOV. The elevation for the Crab position is shown, and we can see the source move in and out of the field of view. In this plot, the "horizon" lies at the maximum extent of what COSI can see beyond zenith, which is ~60 deg from zenith; therefore, COSI's zenith lies 60 deg above the horizon. The Crab is more visible in the latter part of the flight when COSI floated further north. We notice, too, that the Crab is always somewhat off-axis; it is never directly overhead the instrument at zenith.
 
 ## Background Model
 
-As discussed in [data_products](../data_products), we model the background using extensive simulations of Earth's atmospheric $\gamma$-ray background based on the Ling model. The simulations use an accurate mass model of the COSI-balloon instrument during flight and follow the true orientation of the instrument as it traveled along its flight path. The simulations were performed in MEGAlib, and we have provided an .npz background response file which contains the Ling model simulation binned into the Compton Data Space. Defining the background model here loads this response.
+As discussed in the [data README](../../../data/README.md), we model the background using extensive simulations of Earth's atmospheric $\gamma$-ray background based on the Ling model. The simulations use an accurate mass model of the COSI-balloon instrument during flight and follow the true orientation of the instrument as it traveled along its flight path. The simulations were performed in MEGAlib, and we have provided an .npz background response file which contains the Ling model simulation binned into the Compton Data Space. Defining the background model here loads this response.
 
 ## Read in Response Matrix
 
@@ -134,7 +134,7 @@ The steps follow the algorithm as outlined in [Knödlseder et al. 1999](https://
 The total memory used during these iterations is about 94 GB for the continuum response, 75 GB for the 511 keV, and 105 GB for the Al-26!! You might be limited on your personal computer, and at the very least, you might not be able to do much else with your machine while this is running. 
 
 #### Adjustable parameters
-There are three parameters at the beginning of this RL cell which we encourage you to adjust. In fact, it is often necessary to adjust these parameters depending on the data being studied. A list of suggested paramters for different cases is provided [here](imaging_suggested_parameters.pdf).
+There are three parameters at the beginning of this RL cell which we encourage you to adjust. In fact, it is often necessary to adjust these parameters depending on the data being studied. A list of suggested paramters for different cases is provided [here](../../../docs/imaging_suggested_parameters.pdf).
 
 - map_init\
 This is the flux value of the initial, isotropic map. Typically, a value of 0.01 works well. For stronger sources, you can try increasing it to 0.1 or 1.0. As an example, running the algorithm on a source-only (no background) simulation of the Crab, Cen A, Cygnus X-1, and Vela works well with map_init = 0.01. However, when imaging these sources each simulated with 10X their true flux values, the algorithm fails at 0.01 and works when map_init = 1.0.
@@ -165,11 +165,11 @@ Note that the flux may increase without bound as the number of iterations increa
 
 **IMPORTANT NOTE:** The color scales for all images are in arbitrary units. The COSI team is currently working on determining the level of the flux. 
 
-Sample final images are included in the "plots" folder.
+Sample final images are included in the [`results/imaging`](../../../results/imaging) directory.
 
 **Point Source Notebook:** \
 The Crab nebula is the only easily visible source in this combined simulation of 10x flux Crab, 10x flux Cygnus X-1, 10x flux Centaurus A, 10x Vela, and 1x flux Ling background (scaled to the observed 2016 flight background level). A sample final image is shown below:
-<img width="500" alt="PointSources_LingBG_continuumresponse_ebin2_RLimage" src="plots/PointSources_LingBG_continuumresponse_ebin2_RLimage.png">
+<img width="500" alt="PointSources_LingBG_continuumresponse_ebin2_RLimage" src="../../../results/imaging/PointSources_LingBG_continuumresponse_ebin2_RLimage.png">
 
 You can play with the color scaling to try to enhance the appearance of the other sources. Vela is likely too dim to be seen, however. 
 
@@ -182,20 +182,20 @@ You can try combining these four point sources and Ling background with the 10x 
 **Positron Annihilation at 511 keV:** \
 We clearly see the "bulge" emission of positron-electron annihilation at the center of the Milky Way:
 
-<img width="500" alt="511keV_LingBG_511keVresponse_RLimage" src="plots/511keV_LingBG_511keVresponse_RLimage.png">
+<img width="500" alt="511keV_LingBG_511keVresponse_RLimage" src="../../../results/imaging/511keV_LingBG_511keVresponse_RLimage.png">
 
 This was also seen in the published image of real COSI-balloon flight data [(Siegert et al. 2020)](https://iopscience.iop.org/article/10.3847/1538-4357/ab9607/meta):
 
 <img width="500" alt="Siegert_2020_COSI_511keV" src="https://user-images.githubusercontent.com/33991471/196853486-68a90111-245b-442d-841c-756f47c9c14f.png">
 
-The extended disk emission seen in the SPI image (see [Science Background](../data_products/README.md)) is not visible here. This is expected; SPI saw about 1 photon per week from the disk and has over a decade of observation time. There is not enough data in the 46-day balloon flight to image the disk.
+The extended disk emission seen in the SPI image (see [Science Background](../../../data/README.md)) is not visible here. This is expected; SPI saw about 1 photon per week from the disk and has over a decade of observation time. There is not enough data in the 46-day balloon flight to image the disk.
 
 However, we can still probe the emission morphology of the bulge by fitting a 2-D Gaussian, for example, to our simulated image. Constraining the parameters of this fit is important for modeling the physics (positron propogation, point sources of positrons, etc.) behind this enduring mystery.
 
 **Al-26:** \
 As expected, we observe extended Al-26 emission along the Galactic Plane. There is concentrated emission in the Inner Galaxy. The RL algorithm therefore behaves as expected.
 
-<img width="500" alt="26Al_LingBG_1809keVresponse_RLimage" src="plots/26Al_LingBG_1809keVresponse_RLimage.png">
+<img width="500" alt="26Al_LingBG_1809keVresponse_RLimage" src="../../../results/imaging/26Al_LingBG_1809keVresponse_RLimage.png">
 
 Given that only ~100 Al-26 photons were detected during the COSI-balloon flight $(3.7 \sigma$ significance, [Beechert et al. 2022](https://iopscience.iop.org/article/10.3847/1538-4357/ac56dc/meta)), imaging the emission at its true flux instead of 10x strength would likely result in only imaging artifacts. Consider the following calculation. For $n$ spatial bins each with measurement significance $n_i$, the total significance of a measurement is $$s = (\sum_{i = 1}^{n} s_i^2)^{1/2}.$$
 
@@ -204,7 +204,5 @@ Even if requiring only a weak $2\sigma$ measurement in each bin, for example, th
 As with the positron annihilation, we can fit the simulated 10x flux image with a 2-D Gaussian to characterize the morphology of Galactic Al-26. 
 
 Future data challenges will image Al-26 as seen with the COSI satellite. Increased observation time, increased effective area, finer angular resolution, and observations at high Galactic latitudes (extending above and below the Galactic Plane) have great potential to advance understanding of this radioisotope.
-
-
 
 

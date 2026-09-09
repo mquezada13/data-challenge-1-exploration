@@ -1,6 +1,6 @@
 # Welcome to spectral fitting with COSIpy-classic
 
-In this notebook, we'll perform a spectral fit on the Crab nebula and Centaurus A using simulated balloon flight data. There are other simulated sources in the data set - Cygnus X-1, Vela, the 511 keV emission from positron annihilation and the Al-26 1.8 MeV decay line - but these are not explored in this notebook. Please refer to the [data_products](../data_products) README for more details on the scientific background for these sources, and the simulated source models. This README should act as a guide offering additional information for each step of the analysis. The following sections align with the different steps within the notebook.
+In this notebook, we'll perform a spectral fit on the Crab nebula and Centaurus A using simulated balloon flight data. There are other simulated sources in the data set - Cygnus X-1, Vela, the 511 keV emission from positron annihilation and the Al-26 1.8 MeV decay line - but these are not explored in this notebook. Please refer to the [data README](../../../data/README.md) for more details on the scientific background for these sources and the simulated source models. This README should act as a guide offering additional information for each step of the analysis. The following sections align with the different steps within the notebook.
 
 Before diving in, you should be aware that this notebook takes signficant time and computer memory to run. The final spectral fit can take 1 hour on a personal computer with 16 GB of memory. If you have access to a workstation with more memory, that will save you time.
 
@@ -22,7 +22,7 @@ For point source analysis, we use a continuum response simulation which spans se
 **Sky pixel size:** As with the energy binning, the pixel size here must match that of the response. The response matrix that we are providing for this COSI-balloon analysis assumes **$6^{\circ} \times 6^{\circ}$ resolution**.
 
 ### Binning
-Calling `.get_binned_data()` will loop through all of the events in the simulated data set to fill the bins of the Compton Data Sapce (CDS; [../README.md](../README.md)).
+Calling `.get_binned_data()` will loop through all of the events in the simulated data set to fill the bins of the Compton Data Sapce (CDS; [main README](../../../README.md)).
 
 ### Examining the shape
 
@@ -49,11 +49,11 @@ The pointing class handles the aspect information of the COSI-balloon instrument
 
 This is all to say that COSI's orientation changed rapidly during flight. We had a differential GPS onboard, which recorded the yaw, pitch, and roll of the balloon payload every second. In the COSI-balloon calibrations performed in MEGAlib, this is converted to the X, Y and Z pointing of the COSI-balloon in Galactic coordinates. This aspect information is contained in the .tra.gz simulation file and the pointing information for each event is read in during the `.read_COSI_DataSet()` command. This pointing class bins this aspect information into a list of 'stable' pointings for which the change in the aspect is below a certain angular threshold. By default, this threshold is set to 5 degrees. This information is required when creating the sky model or image response.
 
-In the notebook we have some visuals to help you understand the pointings. For example, all of the Z pointings (i.e. COSI's zenith) are plotted in Galactic coordinates, with the Crab nebula and Cen A position overlaid. From this, you can see the path that COSI traced across the sky. This can be compared with the flight path shown in the main [README](../README.md). We also can plot the elevation of any source within COSI's FOV. The elevation for the Crab and Cen A position are shown, and we can see the sources move in and out of the field of view. In these plots, the "horizon" lies at the maximum extent of what COSI can see beyond zenith, which is ~60 deg from zenith; therefore, COSI's zenith lies 60 deg above the horizon. The Crab is more visible in the latter part of the flight when COSI floated further north. We notice, too, that the Crab is always somewhat off-axis; it is never directly overhead the instrument at zenith. Cen A, however, is much higher in COSI's FOV at the beginning of the flight, and at times is directly overhead at zenith.
+In the notebook we have some visuals to help you understand the pointings. For example, all of the Z pointings (i.e. COSI's zenith) are plotted in Galactic coordinates, with the Crab nebula and Cen A position overlaid. From this, you can see the path that COSI traced across the sky. This can be compared with the flight path shown in the main [README](../../../README.md). We also can plot the elevation of any source within COSI's FOV. The elevation for the Crab and Cen A position are shown, and we can see the sources move in and out of the field of view. In these plots, the "horizon" lies at the maximum extent of what COSI can see beyond zenith, which is ~60 deg from zenith; therefore, COSI's zenith lies 60 deg above the horizon. The Crab is more visible in the latter part of the flight when COSI floated further north. We notice, too, that the Crab is always somewhat off-axis; it is never directly overhead the instrument at zenith. Cen A, however, is much higher in COSI's FOV at the beginning of the flight, and at times is directly overhead at zenith.
 
 ## Background Model
 
-As discussed in [data_products](../data_products), we model the background using extensive simulations of Earth's atmospheric $\gamma$-ray background based on the Ling model. The simulations use an accurate mass model of the COSI-balloon instrument during flight and follow the true orientation of the instrument as it traveled along its flight path. The simulations were performed in MEGAlib, and we have provided an .npz background response file which contains the Ling model simulation binned into the Compton Data Space. Defining the background model here loads this response and it is scaled to match the mean rate in the data set. 
+As discussed in the [data README](../../../data/README.md), we model the background using extensive simulations of Earth's atmospheric $\gamma$-ray background based on the Ling model. The simulations use an accurate mass model of the COSI-balloon instrument during flight and follow the true orientation of the instrument as it traveled along its flight path. The simulations were performed in MEGAlib, and we have provided an .npz background response file which contains the Ling model simulation binned into the Compton Data Space. Defining the background model here loads this response and it is scaled to match the mean rate in the data set.
 
 ## Read in Response Matrix
 
@@ -84,7 +84,7 @@ The counts for the simulated data, the background model, and the Crab point sour
 
 ## Fitting the Crab Spectrum
 
-For each energy, we fit the coefficients for the sky and background models that best match the data for each time bin (see [README](../README.md) for more information). This is currently done for each individual energy bin with no consideration of neighboring bins. Given the number of bins in our data space, it can take about an hour to run the full fit.
+For each energy, we fit the coefficients for the sky and background models that best match the data for each time bin (see the [main README](../../../README.md) for more information). This is currently done for each individual energy bin with no consideration of neighboring bins. Given the number of bins in our data space, it can take about an hour to run the full fit.
 
 The final spectrum you obtain should appear as below: 
 
